@@ -11,9 +11,7 @@ RSpec.describe BetterHeroku::Client do
       expect(response.status).to eq 200
       expect(response.parse["id"]).to be_kind_of(String)
     end
-
   end
-
 
   it "should be mockable"
 

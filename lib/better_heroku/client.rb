@@ -4,14 +4,15 @@ module BetterHeroku
   class Client
     ACCEPT = "application/vnd.heroku+json; version=3"
 
-    attr_reader :http
+    attr_reader :host, :http
 
-    def initialize(host: "https://api.heroku.com/", http: HTTP)
-      @http = http.persistent(host).headers("Accept" => ACCEPT)
+    def initialize(host: "https://api.heroku.com", http: HTTP)
+      @host = host
+      @http = http.headers("Accept" => ACCEPT)
     end
 
     def get(*parts)
-      path = "/" + parts.join("/")
+      path = [host, *parts].join("/")
       http.get(path)
     end
 
