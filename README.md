@@ -7,10 +7,13 @@
 # Table of Contents
 
 - [Features](#features)
-- [Screencasts](#screencasts)
 - [Requirements](#requirements)
 - [Setup](#setup)
 - [Usage](#usage)
+  - [Authentication](#authentication)
+    - [Personal API tokens](#personal-api-tokens)
+    - [OAuth tokens](#oauth-tokens)
+  - [Mocking requests](#mocking-requests)
 - [Tests](#tests)
 - [Versioning](#versioning)
 - [Code of Conduct](#code-of-conduct)
