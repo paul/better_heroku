@@ -18,6 +18,8 @@ Gem::Specification.new do |spec|
     spec.cert_chain = [Gem.default_cert_path]
   end
 
+  spec.add_runtime_dependency "http", ">= 2.0"
+
   spec.add_development_dependency "rake", "~> 12.0"
   spec.add_development_dependency "gemsmith", "~> 8.2"
   spec.add_development_dependency "pry", "~> 0.10"
