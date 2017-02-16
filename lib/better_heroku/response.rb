@@ -7,7 +7,7 @@ module BetterHeroku
 
     delegate %i[parse status ] => :http_response
 
-    delegate %i[[]] => :parse
+    delegate %i[[] each map] => :parse
 
     def initialize(http_response)
       @http_response = http_response

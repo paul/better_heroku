@@ -2,6 +2,7 @@ require "http"
 
 require "better_heroku/oauth_handler"
 require "better_heroku/response"
+require "better_heroku/null_instrumenter"
 
 module BetterHeroku
   class Client
@@ -12,10 +13,11 @@ module BetterHeroku
 
     API_HOST  = "https://api.heroku.com"
 
-    def initialize(host: "https://api.heroku.com", http: HTTP, **kwargs)
+    def initialize(host: "https://api.heroku.com", http: HTTP, instrumenter: BetterHeroku::NullInstrumenter.new, **kwargs)
       @options = kwargs
       @options[:host] = host
       @options[:http] = http.headers(DEFAULT_HEADERS)
+      @options[:instrumenter] = instrumenter
     end
 
     def get(*parts, **options)
@@ -23,6 +25,18 @@ module BetterHeroku
     end
 
     def post(*parts, **options)
+      request(:post, *parts, **options)
+    end
+
+    def put(*parts, **options)
+      request(:post, *parts, **options)
+    end
+
+    def delete(*parts, **options)
+      request(:post, *parts, **options)
+    end
+
+    def patch(*parts, **options)
       request(:post, *parts, **options)
     end
 
@@ -46,7 +60,9 @@ module BetterHeroku
 
     def request(verb, *parts, **options)
       path = [host, *parts].join("/")
-      Response.new http.request(verb, path, options)
+      instrument(verb, path, options) do |payload|
+        Response.new(http.request(verb, path, options)).tap { |resp| payload[:response] = resp }
+      end
     end
 
     def host
@@ -59,6 +75,10 @@ module BetterHeroku
 
     def branch(options)
       self.class.new @options.merge(options)
+    end
+
+    def instrument(verb, url, options, &block)
+      @options[:instrumenter].instrument("request.better_heroku_client", verb: verb, url: url, options: options, &block)
     end
   end
 end
