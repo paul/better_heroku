@@ -5,7 +5,7 @@ module BetterHeroku
 
     attr_reader :http_response
 
-    delegate %i[parse status ] => :http_response
+    delegate %i[parse status code reason to_s inspect] => :http_response
 
     delegate %i[[] each map] => :parse
 

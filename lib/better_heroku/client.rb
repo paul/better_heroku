@@ -11,13 +11,17 @@ module BetterHeroku
       "Accept" => ACCEPT
     }
 
-    API_HOST  = "https://api.heroku.com"
+    API_HOST  = "https://api.heroku.com/"
 
-    def initialize(host: "https://api.heroku.com", http: HTTP, instrumenter: BetterHeroku::NullInstrumenter.new, **kwargs)
+    def initialize(host: API_HOST, http: HTTP, instrumenter: BetterHeroku::NullInstrumenter.new, **kwargs)
       @options = kwargs
       @options[:host] = host
       @options[:http] = http.headers(DEFAULT_HEADERS)
       @options[:instrumenter] = instrumenter
+    end
+
+    def with(options = {})
+      self.class.new(@options.merge(options))
     end
 
     def get(*parts, **options)
@@ -41,13 +45,13 @@ module BetterHeroku
     end
 
     def authenticate(token:)
-      branch http: http.auth("Bearer #{token}")
+      with http: http.auth("Bearer #{token}")
     end
 
     def oauth(secret:, refresh_token:, access_token: nil)
       oauth_handler =
         OAuthHandler.new(secret: secret, refresh_token: refresh_token)
-      branch(oauth_handler: oauth_handler).authenticate(token: access_token)
+      with(oauth_handler: oauth_handler).authenticate(token: access_token)
     end
 
     def refresh_oauth_token(&block)
@@ -59,7 +63,7 @@ module BetterHeroku
     private
 
     def request(verb, *parts, **options)
-      path = [host, *parts].join("/")
+      path = URI.join(host, *parts.join("/")).to_s
       instrument(verb, path, options) do |payload|
         Response.new(http.request(verb, path, options)).tap { |resp| payload[:response] = resp }
       end
@@ -71,10 +75,6 @@ module BetterHeroku
 
     def http
       @options[:http]
-    end
-
-    def branch(options)
-      self.class.new @options.merge(options)
     end
 
     def instrument(verb, url, options, &block)
