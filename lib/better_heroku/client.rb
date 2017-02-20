@@ -60,14 +60,14 @@ module BetterHeroku
       authenticate(token: access_token)
     end
 
-    private
-
     def request(verb, *parts, **options)
       path = URI.join(host, *parts.join("/")).to_s
       instrument(verb, path, options) do |payload|
         Response.new(http.request(verb, path, options)).tap { |resp| payload[:response] = resp }
       end
     end
+
+    private
 
     def host
       @options[:host]
