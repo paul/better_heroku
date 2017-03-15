@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "http"
 
 require "better_heroku/oauth_handler"
@@ -50,7 +52,7 @@ module BetterHeroku
 
     def oauth(secret:, refresh_token:, access_token: nil)
       oauth_handler =
-        OAuthHandler.new(secret: secret, refresh_token: refresh_token)
+        OAuthHandler.new(secret: secret, refresh_token: refresh_token, client: self)
       with(oauth_handler: oauth_handler).authenticate(token: access_token)
     end
 

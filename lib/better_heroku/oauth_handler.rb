@@ -1,13 +1,14 @@
+# frozen_string_literal: true
 
 module BetterHeroku
   class OAuthHandler
     AUTH_HOST = "https://id.heroku.com"
 
-    def initialize(secret:, refresh_token:, client: BetterHeroku::Client)
+    def initialize(secret:, refresh_token:, client: BetterHeroku::Client.new)
       @secret = secret
       @refresh_token = refresh_token
 
-      @client = client.new(host: AUTH_HOST)
+      @client = client.with(host: AUTH_HOST)
     end
 
     def refresh_token(&callback)
