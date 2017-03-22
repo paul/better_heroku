@@ -69,11 +69,11 @@ module BetterHeroku
       end
     end
 
-    private
-
     def host
       @options[:host]
     end
+
+    private
 
     def http
       @options[:http]
